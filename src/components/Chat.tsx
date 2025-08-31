@@ -55,25 +55,33 @@ export function Chat() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  // Initialize Audio object
-  useEffect(() => {
-    audioRef.current = new Audio('/notification.mp3')
-  }, [])
+  const loadChatHistory = useCallback(async () => {
+    if (!sessionId) return
+    try {
+      const response = await fetch(`http://localhost:3001/api/sessions/${sessionId}/messages`)
+      if (response.ok) {
+        const historyMessages: ApiMessage[] = await response.json()
+        const formattedMessages: Message[] = historyMessages.map((msg) => ({
+          id: msg.id,
+          content: msg.content,
+          isUser: msg.is_user === 1,
+          timestamp: new Date(msg.created_at)
+        }))
+        setMessages(formattedMessages)
 
-  // Play sound on new bot message
-  useEffect(() => {
-    if (!isMuted && messages.length > 0 && !messages[messages.length - 1].isUser) {
-      audioRef.current?.play().catch(e => console.error("Error playing sound:", e));
-    }
-  }, [messages, isMuted])
+        // Load HTML content if exists
+        const latestHtmlMessage = historyMessages
+          .filter((msg) => msg.html_content)
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
 
-  // Auto-resize textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+        if (latestHtmlMessage) {
+          setHtmlContent(latestHtmlMessage.html_content)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading chat history:', error)
     }
-  }, [inputValue])
+  }, [sessionId])
 
   // Generate session ID on mount
   useEffect(() => {
@@ -93,6 +101,26 @@ export function Chat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Initialize Audio object
+  useEffect(() => {
+    audioRef.current = new Audio('/notification.mp3')
+  }, [])
+
+  // Play sound on new bot message
+  useEffect(() => {
+    if (!isMuted && messages.length > 0 && !messages[messages.length - 1].isUser) {
+      audioRef.current?.play().catch(e => console.error("Error playing sound:", e));
+    }
+  }, [messages, isMuted])
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }, [inputValue])
 
   const loadChatHistory = useCallback(async () => {
     if (!sessionId) return
