@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getCssVariableString } from '@/lib/utils'
-import cssContent from '../../index.css?raw'
+import cssContent from '../index.css?raw'
 
 interface CanvasProps {
   htmlContent: string | null
