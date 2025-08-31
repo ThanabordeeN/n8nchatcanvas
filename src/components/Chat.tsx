@@ -122,34 +122,6 @@ export function Chat() {
     }
   }, [inputValue])
 
-  const loadChatHistory = useCallback(async () => {
-    if (!sessionId) return
-    try {
-      const response = await fetch(`http://localhost:3001/api/sessions/${sessionId}/messages`)
-      if (response.ok) {
-        const historyMessages: ApiMessage[] = await response.json()
-        const formattedMessages: Message[] = historyMessages.map((msg) => ({
-          id: msg.id,
-          content: msg.content,
-          isUser: msg.is_user === 1,
-          timestamp: new Date(msg.created_at)
-        }))
-        setMessages(formattedMessages)
-
-        // Load HTML content if exists
-        const latestHtmlMessage = historyMessages
-          .filter((msg) => msg.html_content)
-          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]
-
-        if (latestHtmlMessage) {
-          setHtmlContent(latestHtmlMessage.html_content)
-        }
-      }
-    } catch (error) {
-      console.error('Error loading chat history:', error)
-    }
-  }, [sessionId])
-
   const loadSessions = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/sessions')
