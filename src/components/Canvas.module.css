@@ -1,0 +1,52 @@
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 50%;
+  background-color: hsl(var(--canvas-bg));
+}
+
+.header {
+  padding: 1.5rem;
+  border-bottom: 1px solid hsl(var(--canvas-border));
+  background-color: hsl(var(--canvas-header-bg));
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--canvas-text));
+  margin: 0;
+}
+
+.content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow: auto;
+}
+
+.prose {
+  color: hsl(var(--canvas-text));
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  color: hsl(var(--canvas-text));
+}
+
+.prose p {
+  color: hsl(var(--canvas-text));
+}
+
+.prose a {
+  color: hsl(var(--canvas-text));
+}
+
+.prose code {
+  background-color: hsl(var(--canvas-bg));
+  color: hsl(var(--canvas-text));
+}
